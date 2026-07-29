@@ -1,41 +1,61 @@
+class minHeap{
+    public:
+        vector<int> arr;
+        int size;
+    
+    minHeap(){
+        size=-1;
+    }
+    
+    void insert(int val){
+        arr.push_back(val);
+        size++;
+        int index = size;
+        while(index>0){
+            int parent = (index-1)/2;
+            if(arr[parent]>arr[index]){
+                swap(arr[parent],arr[index]);
+                index = parent;
+            } else {
+                break;
+            }
+        }
+    }
+
+    void deleteRoot(){
+        swap(arr[0],arr[size]);
+        arr.pop_back();
+        size--;
+        int parent = 0;
+
+        while(true){
+            int left = parent*2+1;
+            int right = parent*2+2;
+            int smallest = parent;
+
+            if(left<=size && arr[left]<arr[smallest]) smallest = left;
+            if(right<=size && arr[right]<arr[smallest]) smallest = right;
+            if(smallest == parent) break;
+
+            swap(arr[parent],arr[smallest]);
+            parent = smallest;
+        }
+    }
+};
+
 class Solution {
 public:
-    // 3-way partition: handles duplicates in O(n) instead of O(n²)
-    // Returns {left_boundary, right_boundary} of pivot region
-    pair<int,int> partition3(vector<int>& nums, int left, int right) {
-        // Random pivot to avoid sorted/near-sorted worst case
-        int randIdx = left + rand() % (right - left + 1);
-        swap(nums[randIdx], nums[right]);
-
-        int pivot = nums[right];
-        int lt = left;   // nums[left..lt-1]  > pivot
-        int gt = right;  // nums[gt+1..right] < pivot
-        int i  = left;
-
-        while (i <= gt) {
-            if (nums[i] > pivot)
-                swap(nums[lt++], nums[i++]);
-            else if (nums[i] < pivot)
-                swap(nums[i], nums[gt--]);
-            else
-                i++;
-        }
-        return {lt, gt};
-    }
-
-    int quickSelect(vector<int>& nums, int left, int right, int k) {
-        if (left == right) return nums[left];
-
-        auto [lt, gt] = partition3(nums, left, right);
-
-        // k is 1-indexed; lt/gt are 0-indexed positions
-        if (k - 1 < lt)       return quickSelect(nums, left,  lt - 1, k);
-        else if (k - 1 > gt)  return quickSelect(nums, gt + 1, right, k);
-        else                  return nums[lt];
-    }
-
     int findKthLargest(vector<int>& nums, int k) {
-        srand(time(0));
-        return quickSelect(nums, 0, nums.size() - 1, k);
+        minHeap p;
+        for(int i=0; i<k; i++){
+            p.insert(nums[i]);
+        }
+        for(int i=k; i<nums.size(); i++){
+            if(nums[i]>p.arr[0]){
+                p.deleteRoot();
+                p.insert(nums[i]);
+            }
+        }
+        return p.arr[0];
     }
 };
