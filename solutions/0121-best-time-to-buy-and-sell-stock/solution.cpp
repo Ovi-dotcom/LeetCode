@@ -1,21 +1,14 @@
 class Solution {
 public:
     int maxProfit(vector<int>& prices) {
-        int l=0;
-        int r=1;
-        int maxi=0;
+        int minPrice = INT_MAX;
+        int maxProfit = 0;
 
-        while(r<prices.size()){
-            if(prices[l]>prices[r]){
-                l = r;
-                r++;
-                continue;
-            }
-            int profit = prices[r]-prices[l];
-            maxi=max(maxi,profit);
-            r++;
+        for (int price : prices) {
+            minPrice = std::min(minPrice, price);
+            maxProfit = std::max(maxProfit, price - minPrice);
         }
 
-        return maxi;
+        return maxProfit;
     }
 };
